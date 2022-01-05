@@ -7,7 +7,7 @@ const ShowCountry = ({country}) => {
 
     useEffect(() => {
         axios
-          .get(`https://api.openweathermap.org/data/2.5/weather?q=${country.capital[0]}&appid=757a40f445e11c0f0739598729efd394`)
+          .get(`https://api.openweathermap.org/data/2.5/weather?q=${country.capital[0]}&appid={API_KEY}`)
           .then(response => {
             setWeather(response.data)
           })

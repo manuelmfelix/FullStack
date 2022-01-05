@@ -1,13 +1,15 @@
 import React from 'react'
+import noteService from '../services/notes'
 
-const Persons = (props) => {
-    const {namesToShow} = props
+const Persons = ({namesToShow, url}) => {
 
     return(
         <div>
-        {namesToShow.map(person =>
-            <li key={person.id}>{person.name} {person.number}</li>
-          )}
+            {namesToShow.map(person =>
+                <li key={person.id}>{person.name} {person.number}
+                    <button onClick={() => noteService.deletePerson(url,person.id,person.name)}>delete</button>
+                </li>
+            )}
         </div>
     )
 }

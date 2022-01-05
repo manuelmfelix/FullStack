@@ -1,7 +1,5 @@
-import Reac from 'react'
 
-const PersonForm = (props) => {
-    const {addPerson, newName, handleChange, newNumber, handleChangeNumber} = props
+const PersonForm = ({addPerson, newName, handleChange, newNumber, handleChangeNumber}) => {
     
     return(
         <form onSubmit = {addPerson}>

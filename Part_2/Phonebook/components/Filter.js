@@ -1,7 +1,5 @@
-import React from 'react'
 
-const Filter = (props) => {
-    const {filterNames,handlefilterNames} = props
+const Filter = ({filterNames,handlefilterNames}) => {
 
     return(
         <div>

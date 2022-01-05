@@ -1,80 +1,99 @@
-import React, { useState,useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
+import Note from './components/Note'
 import axios from 'axios'
-import Filter from './components/Filter'
-import PersonForm from './components/PersonForm'
-import Persons from './components/Persons'
+import noteService from './services/notes'
 
 const App = () => {
-
-  const [ persons, setPersons ] = useState([])
+  const [notes, setNotes] = useState([])
+  const [newNote, setNewNote] = useState('')
+  const [showAll, setShowAll] = useState(false)
 
   useEffect(() => {
-    console.log('effect')
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        console.log('promise fulfilled')
-        setPersons(response.data)
+    noteService
+      .getAll()
+      .then(initialNotes => {
+        setNotes(initialNotes)
       })
   }, [])
 
-  const [ newName, setNewName ] = useState('')
-  const [ newNumber, setNewNumber ] = useState('')
-  const [ filterNames, setFilterNames] = useState('')
-
-  const addPerson = (e) => {
-    e.preventDefault()
-    console.log("goes well!", e.target)
-    const newPerson = {
-      name: newName,
-      id: newName,
-      number: newNumber,
+  const addNote = (event) => {
+    event.preventDefault()
+    const noteObject = {
+      content: newNote,
+      date: new Date().toISOString(),
+      important: Math.random() > 0.5,
     }
 
-    const namesInList = persons.map(person => person.name)
-    console.log(namesInList)
-    console.log(namesInList.includes(newPerson.name))
+    noteService
+    .create(noteObject)
+    .then(returnedNotes => {
+      setNotes(notes.concat(returnedNotes))
+      setNewNote('')
+    })
 
-    if(namesInList.includes(newPerson.name) === true){
-      return(
-        window.alert(`${newPerson.name} is already in the list`)
+    // axios
+    // .post('http://localhost:3001/notes', noteObject)
+    // .then(response => {
+    //   setNotes(notes.concat(response.data))
+    //   setNewNote('')
+    // })
+  }
+
+  const handleNoteChange = (event) => {
+    console.log(event.target.value)
+    setNewNote(event.target.value)
+  }
+
+  const notesToShow = showAll
+  ? notes
+  : notes.filter(note => note.important)
+
+  const toggleImportanceOf = (id) => {
+    const url = `http://localhost:3001/notes/${id}`
+    const note = notes.find(n => n.id === id)
+    const changedNote = { ...note, important: !note.important }
+
+    noteService
+    .update(id,changedNote)
+    .then(returnedNotes => {
+      setNotes(notes.map(note => note.id !== id ? note : returnedNotes))
+    })
+    .catch(error => {
+      alert(
+        `the note ${note.content} was already deleted from server`
       )
-    }
-    setPersons(persons.concat(newPerson))
-    setNewName('')
-    setNewNumber('')
-  } 
+      setNotes(notes.filter(n => n.id !== id))
+    })
 
-  const handleChange = (e) => {
-    console.log(newName)
-    setNewName(e.target.value)
+    // axios.put(url, changedNote).then(response => {
+    //   setNotes(notes.map(note => note.id !== id ? note : response.data))
+    // })
   }
-
-  const handleChangeNumber = (e) => {
-    console.log(newNumber)
-    setNewNumber(e.target.value)
-  }
-
-  const handlefilterNames = (e) => {
-    console.log(e.target.value)
-    setFilterNames(e.target.value)
-  }
-
-  const namesToShow = ''
-  ? persons
-  : persons.filter(person => person.name.toLowerCase().includes(filterNames.toLowerCase()))
 
   return (
     <div>
-      <h2>Phonebook</h2>
-        <Filter filterNames={filterNames} handlefilterNames={handlefilterNames}/>
-
-      <h2>Add a new</h2>
-        <PersonForm addPerson={addPerson} newName={newName} handleChange={handleChange}
-        newNumber={newNumber} handleChangeNumber={handleChangeNumber}/>
-
-      <h2>Numbers</h2>
-        <Persons namesToShow={namesToShow}/>
+      <h1>Notes</h1>
+      <div>
+        <button onClick={() => setShowAll(!showAll)}>
+          show {showAll ? 'important' : 'all' }
+        </button>
+      </div>   
+      <ul>
+        {notesToShow.map(note => 
+            <Note
+            key={note.id}
+            note={note}
+            toggleImportance={() => toggleImportanceOf(note.id)}
+            />
+        )}
+      </ul>
+      <form onSubmit={addNote}>
+        <input
+          value={newNote}
+          onChange={handleNoteChange}
+        />
+        <button type="submit">save</button>
+      </form>  
     </div>
   )
 }

@@ -1,5 +1,5 @@
 import React from 'react'
-import noteService from '../services/notes'
+import personService from '../services/persons'
 
 const Persons = ({namesToShow, url}) => {
 
@@ -7,7 +7,7 @@ const Persons = ({namesToShow, url}) => {
         <div>
             {namesToShow.map(person =>
                 <li key={person.id}>{person.name} {person.number}
-                    <button onClick={() => noteService.deletePerson(url,person.id,person.name)}>delete</button>
+                    <button onClick={() => personService.deletePerson(url,person.id,person.name)}>delete</button>
                 </li>
             )}
         </div>

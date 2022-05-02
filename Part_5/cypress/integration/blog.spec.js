@@ -94,7 +94,7 @@ describe('When logged in', function() {
   it('user can delete his added blogs', function() {
     const deleteblog = this.blogs[0].title
     cy.contains(deleteblog).contains('view').click().parent().contains('delete').click()
-    cy.get('html').should('to.not.contain', deleteblog)
+    cy.get('html').should('not.contain', deleteblog)
   })
 
 })

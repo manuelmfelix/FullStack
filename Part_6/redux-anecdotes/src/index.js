@@ -3,10 +3,12 @@ import ReactDOM from 'react-dom/client'
 import { Provider } from 'react-redux'
 import App from './App'
 import store from './store'
-// import { createStore } from 'redux'
-// import anecReducer from './reducers/anecdoteReducer'
+import anecdoteServices from './services/anecdotes'
+import { setAnecdotes } from './reducers/anecdoteReducer'
 
-// const store = createStore(reducer)
+anecdoteServices.getAll().then(anecdotes =>
+  store.dispatch(setAnecdotes(anecdotes))
+)
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <Provider store={store}>
